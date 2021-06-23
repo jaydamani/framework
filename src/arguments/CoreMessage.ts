@@ -1,6 +1,6 @@
 import { isNewsChannel, isTextChannel, MessageLinkRegex, SnowflakeRegex } from '@sapphire/discord.js-utilities';
 import type { PieceContext } from '@sapphire/pieces';
-import { DMChannel, Message, NewsChannel, Permissions, TextChannel } from 'discord.js';
+import { DMChannel, GuildMember, Message, NewsChannel, Permissions, TextChannel } from 'discord.js';
 import { Argument, ArgumentContext, AsyncArgumentResult } from '../lib/structures/Argument';
 
 export interface MessageArgumentContext extends ArgumentContext {
@@ -14,7 +14,9 @@ export class CoreArgument extends Argument<Message> {
 
 	public async run(parameter: string, context: MessageArgumentContext): AsyncArgumentResult<Message> {
 		const channel = context.channel ?? context.message.channel;
-		const message = (await this.resolveByID(parameter, channel)) ?? (await this.resolveByLink(parameter, context));
+		const message = context.message.member instanceof GuildMember
+		  ? (await this.resolveByID(parameter as `${bigint}`, channel)) ?? (await this.resolveByLink(parameter, context))
+		  : null
 		return message
 			? this.ok(message)
 			: this.error({
@@ -24,7 +26,7 @@ export class CoreArgument extends Argument<Message> {
 			  });
 	}
 
-	private async resolveByID(argument: string, channel: DMChannel | NewsChannel | TextChannel): Promise<Message | null> {
+	private async resolveByID(argument: `${bigint}`, channel: DMChannel | NewsChannel | TextChannel): Promise<Message | null> {
 		return SnowflakeRegex.test(argument) ? channel.messages.fetch(argument).catch(() => null) : null;
 	}
 
@@ -33,7 +35,7 @@ export class CoreArgument extends Argument<Message> {
 
 		const matches = MessageLinkRegex.exec(argument);
 		if (!matches) return null;
-		const [, guildID, channelID, messageID] = matches;
+		const [, guildID, channelID, messageID] = matches as `${bigint}`[]
 
 		const guild = this.container.client.guilds.cache.get(guildID);
 		if (guild !== message.guild) return null;
@@ -42,7 +44,8 @@ export class CoreArgument extends Argument<Message> {
 		if (!channel) return null;
 		if (!(isNewsChannel(channel) || isTextChannel(channel))) return null;
 		if (!channel.viewable) return null;
-		if (!channel.permissionsFor(message.author)?.has(Permissions.FLAGS.VIEW_CHANNEL)) return null;
+		if(!(message.member instanceof GuildMember)) return null
+		if (!channel.permissionsFor(message.member).has(Permissions.FLAGS.VIEW_CHANNEL)) return null;
 
 		return channel.messages.fetch(messageID).catch(() => null);
 	}

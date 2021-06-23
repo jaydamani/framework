@@ -31,7 +31,7 @@ export class CoreArgument extends Argument<GuildMember> {
 	}
 
 	private async resolveByID(argument: string, guild: Guild): Promise<GuildMember | null> {
-		const memberID = UserOrMemberMentionRegex.exec(argument) ?? SnowflakeRegex.exec(argument);
+		const memberID = (UserOrMemberMentionRegex.exec(argument) ?? SnowflakeRegex.exec(argument)) as `${bigint}`[];
 		return memberID ? guild.members.fetch(memberID[1]).catch(() => null) : null;
 	}
 

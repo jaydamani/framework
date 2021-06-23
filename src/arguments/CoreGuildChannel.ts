@@ -31,7 +31,7 @@ export class CoreArgument extends Argument<GuildChannel> {
 	}
 
 	private resolveByID(argument: string, guild: Guild): GuildChannel | null {
-		const channelID = ChannelMentionRegex.exec(argument) ?? SnowflakeRegex.exec(argument);
+		const channelID = (ChannelMentionRegex.exec(argument) ?? SnowflakeRegex.exec(argument)) as `${bigint}`[];
 		return channelID ? guild.channels.cache.get(channelID[1]) ?? null : null;
 	}
 

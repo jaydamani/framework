@@ -7,7 +7,7 @@ export class CoreArgument extends Argument<Channel> {
 		super(context, { name: 'channel' });
 	}
 
-	public run(parameter: string, context: ArgumentContext): ArgumentResult<Channel> {
+	public run(parameter: `${bigint}`, context: ArgumentContext): ArgumentResult<Channel> {
 		const channel = (context.message.guild ? context.message.guild.channels : this.container.client.channels).cache.get(parameter);
 		return channel
 			? this.ok(channel)

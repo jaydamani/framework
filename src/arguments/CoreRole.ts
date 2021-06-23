@@ -25,8 +25,8 @@ export class CoreArgument extends Argument<Role> {
 	}
 
 	private async resolveByID(argument: string, guild: Guild): Promise<Role | null> {
-		const roleID = RoleMentionRegex.exec(argument) ?? SnowflakeRegex.exec(argument);
-		return roleID ? guild.roles.fetch(roleID[1]).catch(() => null) : null;
+		const roleID  = RoleMentionRegex.exec(argument) ?? SnowflakeRegex.exec(argument);
+		return roleID ? guild.roles.fetch(roleID[1] as `${bigint}`).catch(() => null) : null;
 	}
 
 	private resolveByQuery(argument: string, guild: Guild): Role | null {
