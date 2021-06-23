@@ -1,5 +1,5 @@
 import { Awaited, Piece, PieceContext, PieceOptions } from '@sapphire/pieces';
-import type { Message } from 'discord.js';
+import type { Message, CommandInteraction } from 'discord.js';
 import { PreconditionError } from '../errors/PreconditionError';
 import type { UserError } from '../errors/UserError';
 import { err, ok, Result } from '../parsers/Result';
@@ -16,7 +16,7 @@ export abstract class Precondition extends Piece {
 		this.position = options.position ?? null;
 	}
 
-	public abstract run(message: Message, command: Command, context: Precondition.Context): Precondition.Result;
+	public abstract run(message: Message | CommandInteraction, command: Command, context: Precondition.Context): Precondition.Result;
 
 	public ok(): Precondition.Result {
 		return ok();

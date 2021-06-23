@@ -25,11 +25,11 @@ import { Err, err, isErr, isOk, ok, Ok, Result } from './Result';
 /**
  * The argument parser to be used in {@link Command}.
  */
-export class Args {
+export class Args<T> {
 	/**
 	 * The original message that triggered the command.
 	 */
-	public readonly message: Message;
+	public readonly message: T;
 
 	/**
 	 * The command that is being run.
@@ -53,7 +53,7 @@ export class Args {
 	 */
 	private readonly states: Lexure.ArgsState[] = [];
 
-	public constructor(message: Message, command: Command, parser: Lexure.Args, context: CommandContext) {
+	public constructor(message: T, command: Command, parser: Lexure.Args, context: CommandContext) {
 		this.message = message;
 		this.command = command;
 		this.parser = parser;
@@ -63,7 +63,7 @@ export class Args {
 	/**
 	 * Sets the parser to the first token.
 	 */
-	public start(): Args {
+	public start(): Args<T> {
 		this.parser.state = {
 			usedIndices: new Set(),
 			position: 0,

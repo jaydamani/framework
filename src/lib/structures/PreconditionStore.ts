@@ -1,4 +1,5 @@
 import { Store } from '@sapphire/pieces';
+import type { CommandInteraction } from 'discord.js';
 import type { Message } from 'discord.js';
 import { ok } from '../parsers/Result';
 import type { Command } from './Command';
@@ -11,7 +12,7 @@ export class PreconditionStore extends Store<Precondition> {
 		super(Precondition as any, { name: 'preconditions' });
 	}
 
-	public async run(message: Message, command: Command, context: PreconditionContext = {}): AsyncPreconditionResult {
+	public async run(message: Message | CommandInteraction, command: Command, context: PreconditionContext = {}): AsyncPreconditionResult {
 		for (const precondition of this.globalPreconditions) {
 			const result = await precondition.run(message, command, context);
 			if (!result.success) return result;

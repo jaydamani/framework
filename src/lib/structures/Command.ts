@@ -7,7 +7,7 @@ import type { IPreconditionContainer } from '../utils/preconditions/IPreconditio
 import { PreconditionContainerArray, PreconditionEntryResolvable } from '../utils/preconditions/PreconditionContainerArray';
 import { FlagStrategyOptions, FlagUnorderedStrategy } from '../utils/strategies/FlagUnorderedStrategy';
 
-export abstract class Command<T = Args> extends AliasPiece {
+export abstract class Command<T = Message, K extends Args<T> = Args<T>> extends AliasPiece {
 	/**
 	 * A basic summary about the command
 	 * @since 1.0.0
@@ -74,7 +74,7 @@ export abstract class Command<T = Args> extends AliasPiece {
 	 * @param parameters The raw parameters as a single string.
 	 * @param context The command-context used in this execution.
 	 */
-	public preParse(message: Message, parameters: string, context: CommandContext): Awaited<T> {
+	public preParse(message: T, parameters: string, context: CommandContext): Awaited<K> {
 		const parser = new Lexure.Parser(this.lexer.setInput(parameters).lex()).setUnorderedStrategy(this.strategy);
 		const args = new Lexure.Args(parser.parse());
 		return new Args(message, this as any, args, context) as any;
@@ -85,7 +85,7 @@ export abstract class Command<T = Args> extends AliasPiece {
 	 * @param message The message that triggered the command.
 	 * @param args The value returned by {@link Command.preParse}, by default an instance of {@link Args}.
 	 */
-	public abstract run(message: Message, args: T, context: CommandContext): Awaited<unknown>;
+	public abstract run(message: T, args: K, context: CommandContext): Awaited<unknown>;
 
 	/**
 	 * Defines the JSON.stringify behavior of the command.

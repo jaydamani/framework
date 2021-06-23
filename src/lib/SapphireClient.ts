@@ -1,5 +1,5 @@
 import { Awaited, container } from '@sapphire/pieces';
-import { Client, ClientOptions, Message } from 'discord.js';
+import { Client, ClientOptions, Message, Snowflake } from 'discord.js';
 import { join } from 'path';
 import type { Plugin } from './plugins/Plugin';
 import { PluginManager } from './plugins/PluginManager';
@@ -154,7 +154,7 @@ export class SapphireClient extends Client {
 	 * The client's ID, used for the user prefix.
 	 * @since 1.0.0
 	 */
-	public id: string | null = null;
+	public id: Snowflake | null = null;
 
 	/**
 	 * The method to be overriden by the developer.
@@ -199,7 +199,7 @@ export class SapphireClient extends Client {
 	 */
 	public stores: StoreRegistry;
 
-	public constructor(options: ClientOptions = {}) {
+	public constructor(options: ClientOptions) {
 		super(options);
 
 		container.client = this;
@@ -222,7 +222,7 @@ export class SapphireClient extends Client {
 			this.emit(Events.PluginLoaded, plugin.type, plugin.name);
 		}
 
-		this.id = options.id ?? null;
+		this.id = options.id as Snowflake ?? null;
 		this.stores
 			.register(new ArgumentStore().registerPath(join(__dirname, '..', 'arguments'))) //
 			.register(new CommandStore())
@@ -282,7 +282,7 @@ export interface ClientLoggerOptions {
 
 declare module 'discord.js' {
 	interface Client {
-		id: string | null;
+		id: Snowflake | null;
 		logger: ILogger;
 		stores: StoreRegistry;
 		fetchPrefix: SapphirePrefixHook;

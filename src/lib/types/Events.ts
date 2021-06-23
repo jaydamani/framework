@@ -99,34 +99,34 @@ export interface UnknownCommandPayload extends UnknownCommandNamePayload {
 	commandName: string;
 }
 
-export interface ICommandPayload {
-	message: Message;
+export interface ICommandPayload<T = Message> {
+	message: T;
 	command: Command;
 }
 
-export interface PreCommandRunPayload extends CommandDeniedPayload {}
+export interface PreCommandRunPayload<T = Message> extends CommandDeniedPayload<T>{}
 
-export interface CommandDeniedPayload extends ICommandPayload {
+export interface CommandDeniedPayload<T = Message>  extends ICommandPayload<T> {
 	parameters: string;
 	context: CommandContext;
 }
 
-export interface CommandAcceptedPayload extends ICommandPayload {
+export interface CommandAcceptedPayload <T = Message> extends ICommandPayload<T> {
 	parameters: string;
 	context: CommandContext;
 }
 
-export interface CommandRunPayload<T extends Args = Args> extends CommandAcceptedPayload {
-	args: T;
+export interface CommandRunPayload<T = Message,K extends Args<T> = Args<T>> extends CommandAcceptedPayload<T> {
+	args: K;
 }
 
-export interface CommandFinishPayload<T extends Args = Args> extends CommandRunPayload<T> {}
+export interface CommandFinishPayload<T = Message,K extends Args<T> = Args<T>> extends CommandRunPayload<T, K> {}
 
-export interface CommandErrorPayload<T extends Args = Args> extends CommandRunPayload<T> {
+export interface CommandErrorPayload<T = Message,K extends Args<T> = Args<T>> extends CommandRunPayload<T, K> {
 	piece: Command;
 }
 
-export interface CommandSuccessPayload<T extends Args = Args> extends CommandRunPayload<T> {
+export interface CommandSuccessPayload<T = Message,K extends Args<T> = Args<T>> extends CommandRunPayload<T, K> {
 	result: unknown;
 }
 
@@ -141,13 +141,13 @@ declare module 'discord.js' {
 		[Events.PrefixedMessage]: [message: Message, prefix: string | RegExp];
 		[Events.UnknownCommandName]: [payload: UnknownCommandNamePayload];
 		[Events.UnknownCommand]: [payload: UnknownCommandPayload];
-		[Events.PreCommandRun]: [payload: PreCommandRunPayload];
-		[Events.CommandDenied]: [error: UserError, payload: CommandDeniedPayload];
-		[Events.CommandAccepted]: [payload: CommandAcceptedPayload];
-		[Events.CommandRun]: [message: Message, command: Command, payload: CommandRunPayload];
-		[Events.CommandSuccess]: [payload: CommandSuccessPayload];
-		[Events.CommandError]: [error: Error, payload: CommandErrorPayload];
-		[Events.CommandFinish]: [message: Message, command: Command, payload: CommandFinishPayload];
+		[Events.PreCommandRun]: [payload: PreCommandRunPayload<any>];
+		[Events.CommandDenied]: [error: UserError, payload: CommandDeniedPayload<any>];
+		[Events.CommandAccepted]: [payload: CommandAcceptedPayload<any>];
+		[Events.CommandRun]: [message: Message, command: Command, payload: CommandRunPayload<any>];
+		[Events.CommandSuccess]: [payload: CommandSuccessPayload<any>];
+		[Events.CommandError]: [error: Error, payload: CommandErrorPayload<any>];
+		[Events.CommandFinish]: [message: Message, command: Command, payload: CommandFinishPayload<any>];
 		[Events.PluginLoaded]: [hook: PluginHook, name: string | undefined];
 		[Events.NonPrefixedMessage]: [message: Message];
 		// #endregion Sapphire load cycle events

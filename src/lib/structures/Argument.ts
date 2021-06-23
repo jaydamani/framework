@@ -27,7 +27,7 @@ export interface IArgument<T> {
 	 * @param parameter The string parameter to parse.
 	 * @param context The context for the method call, contains the message, command, and other options.
 	 */
-	run(parameter: string, context: ArgumentContext<T>): ArgumentResult<T>;
+	run(parameter: string, context: ArgumentContext<T,unknown>): ArgumentResult<T>;
 }
 
 /**
@@ -110,10 +110,10 @@ export abstract class Argument<T = unknown> extends AliasPiece implements IArgum
 
 export interface ArgumentOptions extends AliasPieceOptions {}
 
-export interface ArgumentContext<T = unknown> extends Record<PropertyKey, unknown> {
+export interface ArgumentContext<T = unknown, K = Message> extends Record<PropertyKey, unknown> {
 	argument: IArgument<T>;
-	args: Args;
-	message: Message;
+	args: Args<K>;
+	message: K;
 	command: Command;
 	commandContext: CommandContext;
 	minimum?: number;

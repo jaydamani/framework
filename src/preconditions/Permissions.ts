@@ -17,7 +17,7 @@ export class CorePrecondition extends Precondition {
 	]).freeze();
 
 	public run(message: Message, _command: Command, context: PreconditionContext): PreconditionResult {
-		const required = (context.permissions as Permissions) ?? new Permissions(0);
+		const required = (context.permissions as Permissions) ?? new Permissions();
 		const permissions = message.guild
 			? (message.channel as TextChannel | NewsChannel).permissionsFor(message.client.id!)!
 			: this.dmChannelPermissions;
@@ -34,6 +34,8 @@ export class CorePrecondition extends Precondition {
 	}
 
 	protected static readonly readablePermissions = {
+    USE_APPLICATION_COMMANDS: 'Use Application Commands',
+    REQUEST_TO_SPEAK: 'Request To Speak',
 		ADMINISTRATOR: 'Administrator',
 		VIEW_AUDIT_LOG: 'View Audit Log',
 		MANAGE_GUILD: 'Manage Server',
